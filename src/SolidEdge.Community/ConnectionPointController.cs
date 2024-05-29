@@ -1,173 +1,152 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using System.Threading;
 
-namespace SolidEdgeCommunity
+namespace SolidEdgeCommunity;
+
+/// <summary>
+///     Default controller that handles connecting\disconnecting to COM events via IConnectionPointContainer and
+///     IConnectionPoint interfaces.
+/// </summary>
+public class ConnectionPointController
 {
-    /// <summary>
-    /// Default controller that handles connecting\disconnecting to COM events via IConnectionPointContainer and IConnectionPoint interfaces.
-    /// </summary>
-    public class ConnectionPointController
+    private readonly Dictionary<IConnectionPoint, int> _connectionPointDictionary = new();
+    private readonly object _sink;
+
+    public ConnectionPointController(object sink)
     {
-        private object _sink;
-        private Dictionary<IConnectionPoint, int> _connectionPointDictionary = new Dictionary<IConnectionPoint, int>();
+        if (sink == null) throw new ArgumentNullException("sink");
+        _sink = sink;
+    }
 
-        public ConnectionPointController(object sink)
+    /// <summary>
+    ///     Establishes a connection between a connection point object and the client's sink.
+    /// </summary>
+    /// <typeparam name="TInterface">Interface type of the outgoing interface whose connection point object is being requested.</typeparam>
+    /// <param name="container">An object that implements the IConnectionPointContainer inferface.</param>
+    public void AdviseSink<TInterface>(object container) where TInterface : class
+    {
+        var lockTaken = false;
+
+        try
         {
-            if (sink == null) throw new ArgumentNullException("sink");
-            _sink = sink;
-        }
+            Monitor.Enter(this, ref lockTaken);
 
-        /// <summary>
-        /// Establishes a connection between a connection point object and the client's sink.
-        /// </summary>
-        /// <typeparam name="TInterface">Interface type of the outgoing interface whose connection point object is being requested.</typeparam>
-        /// <param name="container">An object that implements the IConnectionPointContainer inferface.</param>
-        public void AdviseSink<TInterface>(object container) where TInterface : class
-        {
-            bool lockTaken = false;
+            // Prevent multiple event Advise() calls on same sink.
+            if (IsSinkAdvised<TInterface>(container)) return;
 
-            try
+            IConnectionPointContainer cpc = null;
+            IConnectionPoint cp = null;
+            var cookie = 0;
+
+            cpc = (IConnectionPointContainer)container;
+            var item = typeof(TInterface).GUID;
+            cpc.FindConnectionPoint(ref item, out cp);
+
+            if (cp != null)
             {
-                Monitor.Enter(this, ref lockTaken);
-
-                // Prevent multiple event Advise() calls on same sink.
-                if (IsSinkAdvised<TInterface>(container))
-                {
-                    return;
-                }
-
-                IConnectionPointContainer cpc = null;
-                IConnectionPoint cp = null;
-                int cookie = 0;
-
-                cpc = (IConnectionPointContainer)container;
-                var item = typeof(TInterface).GUID;
-                cpc.FindConnectionPoint(ref item, out cp);
-
-                if (cp != null)
-                {
-                    cp.Advise(_sink, out cookie);
-                    _connectionPointDictionary.Add(cp, cookie);
-                }
-            }
-            finally
-            {
-                if (lockTaken)
-                {
-                    Monitor.Exit(this);
-                }
+                cp.Advise(_sink, out cookie);
+                _connectionPointDictionary.Add(cp, cookie);
             }
         }
-
-        /// <summary>
-        /// Determines if a connection between a connection point object and the client's sink is established.
-        /// </summary>
-        /// <param name="container">An object that implements the IConnectionPointContainer inferface.</param>
-        public bool IsSinkAdvised<TInterface>(object container) where TInterface : class
+        finally
         {
-            bool lockTaken = false;
+            if (lockTaken) Monitor.Exit(this);
+        }
+    }
 
-            try
-            {
-                Monitor.Enter(this, ref lockTaken);
+    /// <summary>
+    ///     Determines if a connection between a connection point object and the client's sink is established.
+    /// </summary>
+    /// <param name="container">An object that implements the IConnectionPointContainer inferface.</param>
+    public bool IsSinkAdvised<TInterface>(object container) where TInterface : class
+    {
+        var lockTaken = false;
 
-                IConnectionPointContainer cpc = null;
-                IConnectionPoint cp = null;
-                int cookie = 0;
+        try
+        {
+            Monitor.Enter(this, ref lockTaken);
 
-                cpc = (IConnectionPointContainer)container;
-                var item = typeof(TInterface).GUID;
-                cpc.FindConnectionPoint(ref item, out cp);
+            IConnectionPointContainer cpc = null;
+            IConnectionPoint cp = null;
+            var cookie = 0;
 
-                if (cp != null)
+            cpc = (IConnectionPointContainer)container;
+            var item = typeof(TInterface).GUID;
+            cpc.FindConnectionPoint(ref item, out cp);
+
+            if (cp != null)
+                if (_connectionPointDictionary.ContainsKey(cp))
                 {
-                    if (_connectionPointDictionary.ContainsKey(cp))
-                    {
-                        cookie = _connectionPointDictionary[cp];
-                        return true;
-                    }
+                    cookie = _connectionPointDictionary[cp];
+                    return true;
                 }
-            }
-            finally
-            {
-                if (lockTaken)
-                {
-                    Monitor.Exit(this);
-                }
-            }
-
-            return false;
+        }
+        finally
+        {
+            if (lockTaken) Monitor.Exit(this);
         }
 
-        /// <summary>
-        /// Terminates an advisory connection previously established between a connection point object and a client's sink.
-        /// </summary>
-        /// <typeparam name="TInterface">Interface type of the interface whose connection point object is being requested to be removed.</typeparam>
-        /// <param name="container">An object that implements the IConnectionPointContainer inferface.</param>
-        public void UnadviseSink<TInterface>(object container) where TInterface : class
+        return false;
+    }
+
+    /// <summary>
+    ///     Terminates an advisory connection previously established between a connection point object and a client's sink.
+    /// </summary>
+    /// <typeparam name="TInterface">
+    ///     Interface type of the interface whose connection point object is being requested to be
+    ///     removed.
+    /// </typeparam>
+    /// <param name="container">An object that implements the IConnectionPointContainer inferface.</param>
+    public void UnadviseSink<TInterface>(object container) where TInterface : class
+    {
+        var lockTaken = false;
+
+        try
         {
-            bool lockTaken = false;
+            Monitor.Enter(this, ref lockTaken);
 
-            try
-            {
-                Monitor.Enter(this, ref lockTaken);
+            IConnectionPointContainer cpc = null;
+            IConnectionPoint cp = null;
+            var cookie = 0;
 
-                IConnectionPointContainer cpc = null;
-                IConnectionPoint cp = null;
-                int cookie = 0;
+            cpc = (IConnectionPointContainer)container;
+            var item = typeof(TInterface).GUID;
+            cpc.FindConnectionPoint(ref item, out cp);
 
-                cpc = (IConnectionPointContainer)container;
-                var item = typeof(TInterface).GUID;
-                cpc.FindConnectionPoint(ref item, out cp);
-
-                if (cp != null)
+            if (cp != null)
+                if (_connectionPointDictionary.ContainsKey(cp))
                 {
-                    if (_connectionPointDictionary.ContainsKey(cp))
-                    {
-                        cookie = _connectionPointDictionary[cp];
-                        cp.Unadvise(cookie);
-                        _connectionPointDictionary.Remove(cp);
-                    }
+                    cookie = _connectionPointDictionary[cp];
+                    cp.Unadvise(cookie);
+                    _connectionPointDictionary.Remove(cp);
                 }
-            }
-            finally
-            {
-                if (lockTaken)
-                {
-                    Monitor.Exit(this);
-                }
-            }
         }
-
-        /// <summary>
-        /// Terminates all advisory connections previously established.
-        /// </summary>
-        public void UnadviseAllSinks()
+        finally
         {
-            bool lockTaken = false;
+            if (lockTaken) Monitor.Exit(this);
+        }
+    }
 
-            try
-            {
-                Monitor.Enter(this, ref lockTaken);
-                Dictionary<IConnectionPoint, int>.Enumerator enumerator = _connectionPointDictionary.GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    enumerator.Current.Key.Unadvise(enumerator.Current.Value);
-                }
-            }
-            finally
-            {
-                _connectionPointDictionary.Clear();
+    /// <summary>
+    ///     Terminates all advisory connections previously established.
+    /// </summary>
+    public void UnadviseAllSinks()
+    {
+        var lockTaken = false;
 
-                if (lockTaken)
-                {
-                    Monitor.Exit(this);
-                }
-            }
+        try
+        {
+            Monitor.Enter(this, ref lockTaken);
+            var enumerator = _connectionPointDictionary.GetEnumerator();
+            while (enumerator.MoveNext()) enumerator.Current.Key.Unadvise(enumerator.Current.Value);
+        }
+        finally
+        {
+            _connectionPointDictionary.Clear();
+
+            if (lockTaken) Monitor.Exit(this);
         }
     }
 }

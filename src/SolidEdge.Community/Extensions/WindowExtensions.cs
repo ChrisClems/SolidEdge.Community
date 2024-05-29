@@ -1,29 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using SolidEdgeFramework;
 
-namespace SolidEdgeCommunity.Extensions
+namespace SolidEdgeCommunity.Extensions;
+
+/// <summary>
+///     SolidEdgeFramework.Window extension methods.
+/// </summary>
+public static class WindowExtensions
 {
     /// <summary>
-    /// SolidEdgeFramework.Window extension methods.
+    ///     Returns an IntPtr representing the window handle.
     /// </summary>
-    public static class WindowExtensions
+    public static IntPtr GetDrawHandle(this Window window)
     {
-        /// <summary>
-        /// Returns an IntPtr representing the window handle.
-        /// </summary>
-        public static IntPtr GetDrawHandle(this SolidEdgeFramework.Window window)
-        {
-            return new IntPtr(window.DrawHwnd);
-        }
+        return new IntPtr(window.DrawHwnd);
+    }
 
-        /// <summary>
-        /// Returns an IntPtr representing the window handle.
-        /// </summary>
-        public static IntPtr GetHandle(this SolidEdgeFramework.Window window)
-        {
-            return new IntPtr(window.hWnd);
-        }
+    /// <summary>
+    ///     Returns an IntPtr representing the window handle.
+    /// </summary>
+    public static IntPtr GetHandle(this Window window)
+    {
+        return new IntPtr(window.hWnd);
     }
 }

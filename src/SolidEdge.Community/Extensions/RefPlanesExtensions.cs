@@ -1,37 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using SolidEdgePart;
 
-namespace SolidEdgeCommunity.Extensions
+namespace SolidEdgeCommunity.Extensions;
+
+/// <summary>
+///     SolidEdgePart.RefPlanes extension methods.
+/// </summary>
+public static class RefPlanesExtensions
 {
     /// <summary>
-    /// SolidEdgePart.RefPlanes extension methods.
+    ///     Returns a SolidEdgePart.RefPlane representing the default top plane.
     /// </summary>
-    public static class RefPlanesExtensions
+    public static RefPlane GetTopPlane(this RefPlanes refPlanes)
     {
-        /// <summary>
-        /// Returns a SolidEdgePart.RefPlane representing the default top plane.
-        /// </summary>
-        public static SolidEdgePart.RefPlane GetTopPlane(this SolidEdgePart.RefPlanes refPlanes)
-        {
-            return refPlanes.Item(1);
-        }
+        return refPlanes.Item(1);
+    }
 
-        /// <summary>
-        /// Returns a SolidEdgePart.RefPlane representing the default right plane.
-        /// </summary>
-        public static SolidEdgePart.RefPlane GetRightPlane(this SolidEdgePart.RefPlanes refPlanes)
-        {
-            return refPlanes.Item(2);
-        }
+    /// <summary>
+    ///     Returns a SolidEdgePart.RefPlane representing the default right plane.
+    /// </summary>
+    public static RefPlane GetRightPlane(this RefPlanes refPlanes)
+    {
+        return refPlanes.Item(2);
+    }
 
-        /// <summary>
-        /// Returns a SolidEdgePart.RefPlane representing the default front plane.
-        /// </summary>
-        public static SolidEdgePart.RefPlane GetFrontPlane(this SolidEdgePart.RefPlanes refPlanes)
-        {
-            return refPlanes.Item(3);
-        }
+    /// <summary>
+    ///     Returns a SolidEdgePart.RefPlane representing the default front plane.
+    /// </summary>
+    public static RefPlane GetFrontPlane(this RefPlanes refPlanes)
+    {
+        return refPlanes.Item(3);
     }
 }

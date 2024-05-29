@@ -1,116 +1,111 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
+using SolidEdgeFileProperties;
 
-namespace SolidEdgeCommunity.Extensions
+namespace SolidEdgeCommunity.Extensions;
+
+/// <summary>
+///     SolidEdgeFileProperties.PropertySets extensions.
+/// </summary>
+public static class PropertySetsExtensions
 {
+    ///// <summary>
+    ///// Returns all property sets as an IEnumerable.
+    ///// </summary>
+    ///// <param name="propertySets"></param>
+    //public static IEnumerable<SolidEdgeFileProperties.Properties> AsEnumerable(this SolidEdgeFileProperties.PropertySets propertySets)
+    //{
+    //    List<SolidEdgeFileProperties.Properties> list = new List<SolidEdgeFileProperties.Properties>();
+
+    //    foreach (var properties in propertySets)
+    //    {
+    //        list.Add((SolidEdgeFileProperties.Properties)properties);
+    //    }
+
+    //    return list.AsEnumerable();
+    //}
+
     /// <summary>
-    /// SolidEdgeFileProperties.PropertySets extensions.
+    ///     Closes an open document with the option to save changes.
     /// </summary>
-    public static class PropertySetsExtensions
+    /// <param name="propertySets"></param>
+    /// <param name="saveChanges"></param>
+    public static void Close(this PropertySets propertySets, bool saveChanges)
     {
-        ///// <summary>
-        ///// Returns all property sets as an IEnumerable.
-        ///// </summary>
-        ///// <param name="propertySets"></param>
-        //public static IEnumerable<SolidEdgeFileProperties.Properties> AsEnumerable(this SolidEdgeFileProperties.PropertySets propertySets)
-        //{
-        //    List<SolidEdgeFileProperties.Properties> list = new List<SolidEdgeFileProperties.Properties>();
+        if (saveChanges) propertySets.Save();
 
-        //    foreach (var properties in propertySets)
-        //    {
-        //        list.Add((SolidEdgeFileProperties.Properties)properties);
-        //    }
+        propertySets.Close();
+    }
 
-        //    return list.AsEnumerable();
-        //}
+    /// <summary>
+    ///     Adds or modifies a custom property.
+    /// </summary>
+    internal static Property InternalUpdateCustomProperty(this PropertySets propertySets, string propertyName,
+        object propertyValue)
+    {
+        Properties customPropertySet = null;
+        Property property = null;
 
-        /// <summary>
-        /// Closes an open document with the option to save changes.
-        /// </summary>
-        /// <param name="propertySets"></param>
-        /// <param name="saveChanges"></param>
-        public static void Close(this SolidEdgeFileProperties.PropertySets propertySets, bool saveChanges)
+        try
         {
-            if (saveChanges)
-            {
-                propertySets.Save();
-            }
+            // Get a reference to the custom property set.
+            customPropertySet = (Properties)propertySets["Custom"];
 
-            propertySets.Close();
+            // Attempt to get the custom property.
+            property = (Property)customPropertySet[propertyName];
+
+            // If we get here, the custom property exists so update the value.
+            property.Value = propertyValue;
+        }
+        catch (COMException)
+        {
+            // If we get here, the custom property does not exist so add it.
+            property = (Property)customPropertySet.Add(propertyName, propertyValue);
         }
 
-        /// <summary>
-        /// Adds or modifies a custom property.
-        /// </summary>
-        internal static SolidEdgeFileProperties.Property InternalUpdateCustomProperty(this SolidEdgeFileProperties.PropertySets propertySets, string propertyName, object propertyValue)
-        {
-            SolidEdgeFileProperties.Properties customPropertySet = null;
-            SolidEdgeFileProperties.Property property = null;
+        return property;
+    }
 
-            try
-            {
-                // Get a reference to the custom property set.
-                customPropertySet = (SolidEdgeFileProperties.Properties)propertySets["Custom"];
+    /// <summary>
+    ///     Adds or modifies a custom property.
+    /// </summary>
+    public static Property UpdateCustomProperty(this PropertySets propertySets, string propertyName, bool propertyValue)
+    {
+        return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
+    }
 
-                // Attempt to get the custom property.
-                property = (SolidEdgeFileProperties.Property)customPropertySet[propertyName];
+    /// <summary>
+    ///     Adds or modifies a custom property.
+    /// </summary>
+    public static Property UpdateCustomProperty(this PropertySets propertySets, string propertyName,
+        DateTime propertyValue)
+    {
+        return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
+    }
 
-                // If we get here, the custom property exists so update the value.
-                property.Value = propertyValue;
-            }
-            catch (System.Runtime.InteropServices.COMException)
-            {
-                // If we get here, the custom property does not exist so add it.
-                property = (SolidEdgeFileProperties.Property)customPropertySet.Add(propertyName, propertyValue);
-            }
-            catch
-            {
-                throw;
-            }
+    /// <summary>
+    ///     Adds or modifies a custom property.
+    /// </summary>
+    public static Property UpdateCustomProperty(this PropertySets propertySets, string propertyName,
+        double propertyValue)
+    {
+        return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
+    }
 
-            return property;
-        }
+    /// <summary>
+    ///     Adds or modifies a custom property.
+    /// </summary>
+    public static Property UpdateCustomProperty(this PropertySets propertySets, string propertyName, int propertyValue)
+    {
+        return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
+    }
 
-        /// <summary>
-        /// Adds or modifies a custom property.
-        /// </summary>
-        public static SolidEdgeFileProperties.Property UpdateCustomProperty(this SolidEdgeFileProperties.PropertySets propertySets, string propertyName, bool propertyValue)
-        {
-            return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
-        }
-
-        /// <summary>
-        /// Adds or modifies a custom property.
-        /// </summary>
-        public static SolidEdgeFileProperties.Property UpdateCustomProperty(this SolidEdgeFileProperties.PropertySets propertySets, string propertyName, DateTime propertyValue)
-        {
-            return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
-        }
-
-        /// <summary>
-        /// Adds or modifies a custom property.
-        /// </summary>
-        public static SolidEdgeFileProperties.Property UpdateCustomProperty(this SolidEdgeFileProperties.PropertySets propertySets, string propertyName, double propertyValue)
-        {
-            return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
-        }
-
-        /// <summary>
-        /// Adds or modifies a custom property.
-        /// </summary>
-        public static SolidEdgeFileProperties.Property UpdateCustomProperty(this SolidEdgeFileProperties.PropertySets propertySets, string propertyName, int propertyValue)
-        {
-            return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
-        }
-
-        /// <summary>
-        /// Adds or modifies a custom property.
-        /// </summary>
-        public static SolidEdgeFileProperties.Property UpdateCustomProperty(this SolidEdgeFileProperties.PropertySets propertySets, string propertyName, string propertyValue)
-        {
-            return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
-        }
+    /// <summary>
+    ///     Adds or modifies a custom property.
+    /// </summary>
+    public static Property UpdateCustomProperty(this PropertySets propertySets, string propertyName,
+        string propertyValue)
+    {
+        return propertySets.InternalUpdateCustomProperty(propertyName, propertyValue);
     }
 }

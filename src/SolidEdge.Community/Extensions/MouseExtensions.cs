@@ -1,44 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using SolidEdgeConstants;
+using SolidEdgeFramework;
 
-namespace SolidEdgeCommunity.Extensions
+namespace SolidEdgeCommunity.Extensions;
+
+/// <summary>
+///     SolidEdgeFramework.Mouse extension methods.
+/// </summary>
+public static class MouseExtensions
 {
     /// <summary>
-    /// SolidEdgeFramework.Mouse extension methods.
+    ///     Specifies what types of objects the Mouse can locate.
     /// </summary>
-    public static class MouseExtensions
+    /// <param name="mouse"></param>
+    /// <param name="filter"></param>
+    public static void AddToLocateFilter(this Mouse mouse, seLocateFilterConstants filter)
     {
-        /// <summary>
-        /// Specifies what types of objects the Mouse can locate.
-        /// </summary>
-        /// <param name="mouse"></param>
-        /// <param name="filter"></param>
-        public static void AddToLocateFilter(this SolidEdgeFramework.Mouse mouse, SolidEdgeConstants.seLocateFilterConstants filter)
-        {
-            mouse.AddToLocateFilter((int)filter);
-        }
+        mouse.AddToLocateFilter((int)filter);
+    }
 
-        /// <summary>
-        /// Sets the locate mode for the referenced object.
-        /// </summary>
-        /// <param name="mouse"></param>
-        /// <param name="mode"></param>
-        public static void SetLocateMode(this SolidEdgeFramework.Mouse mouse, SolidEdgeConstants.seLocateModes mode)
-        {
-            mouse.LocateMode = (int)mode;
-        }
+    /// <summary>
+    ///     Sets the locate mode for the referenced object.
+    /// </summary>
+    /// <param name="mouse"></param>
+    /// <param name="mode"></param>
+    public static void SetLocateMode(this Mouse mouse, seLocateModes mode)
+    {
+        mouse.LocateMode = (int)mode;
+    }
 
-        /// <summary>
-        /// Returns the locate mode for the referenced object.
-        /// </summary>
-        /// <param name="mouse"></param>
-        /// <param name="mode"></param>
-        /// <returns></returns>
-        public static SolidEdgeConstants.seLocateModes GetLocateMode(this SolidEdgeFramework.Mouse mouse, SolidEdgeConstants.seLocateModes mode)
-        {
-            return (SolidEdgeConstants.seLocateModes)mouse.LocateMode;
-        }
+    /// <summary>
+    ///     Returns the locate mode for the referenced object.
+    /// </summary>
+    /// <param name="mouse"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    public static seLocateModes GetLocateMode(this Mouse mouse, seLocateModes mode)
+    {
+        return (seLocateModes)mouse.LocateMode;
     }
 }
