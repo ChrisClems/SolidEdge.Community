@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0-windows</TargetFrameworks>
 	 <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyVersion>222.0.0.0</AssemblyVersion>
-    <FileVersion>222.0.0.0</FileVersion>
-    <Version>222.0.0</Version>
-    <Authors>Derek Gooding</Authors>
-    <Company>Derek Gooding</Company>
-    <Description>Community provided package for automating Solid Edge.</Description>
-    <PackageLicenseUrl>https://github.com/SolidEdgeCommunity/SolidEdge.Community/blob/master/LICENSE.md</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/SolidEdgeCommunity/SolidEdge.Community</PackageProjectUrl>
+    <AssemblyVersion>2024.5.1</AssemblyVersion>
+    <FileVersion>2024.5.1</FileVersion>
+    <Version>2024.5.1</Version>
+    <Authors>Chris Clemons</Authors>
+    <Description>Helper methods for interacting with the Solid Edge COM interface</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/ChrisClems/SolidEdge.Community</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl>https://raw.githubusercontent.com/SolidEdgeCommunity/SolidEdge.Community/master/media/icon.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/SolidEdgeCommunity/SolidEdge.Community.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ChrisClems/SolidEdge.Community.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>interop solidedge community contrib</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|NET40|AnyCPU'">
@@ -28,8 +29,12 @@
 
   <ItemGroup>
     <Reference Include="Interop.SolidEdge">
-      <HintPath>..\..\..\Interop.SolidEdge\src\Interop.SolidEdge\bin\Release\netstandard2.0\Interop.SolidEdge.dll</HintPath>
+      <HintPath>..\..\..\Interop.SolidEdge\src\Interop.SolidEdge\bin\Release\net8.0-windows\Interop.SolidEdge.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="Assets\icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>

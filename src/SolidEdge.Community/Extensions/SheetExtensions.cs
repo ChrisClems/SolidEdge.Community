@@ -58,10 +58,6 @@ namespace SolidEdgeCommunity.Extensions
                     throw new System.Exception("Error opening clipboard.");
                 }
             }
-            catch (System.Exception e)
-            {
-                throw e;
-            }
             finally
             {
                 CloseClipboard();
@@ -104,10 +100,6 @@ namespace SolidEdgeCommunity.Extensions
                 {
                     throw new System.Exception("Error opening clipboard.");
                 }
-            }
-            catch (System.Exception e)
-            {
-                throw e;
             }
             finally
             {

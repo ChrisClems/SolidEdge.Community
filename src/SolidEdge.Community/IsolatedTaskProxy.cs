@@ -18,6 +18,7 @@ namespace SolidEdgeCommunity
         /// <summary>
         /// Lifetime services as disabled by default.
         /// </summary>
+        [Obsolete("This Remoting API is not supported and throws PlatformNotSupportedException.", DiagnosticId = "SYSLIB0010", UrlFormat = "https://aka.ms/dotnet-warnings/{0}")]
         public sealed override object InitializeLifetimeService()
         {
             return null;
